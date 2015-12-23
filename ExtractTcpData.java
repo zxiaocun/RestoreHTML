@@ -9,6 +9,7 @@ public class ExtractTcpData {
 
 	private String pcapDir;
 	private Vector<String> tcpFiles;
+	private static final byte[] DIVISION = new byte[]{ 0X0d,0X0a };
 
 	public ExtractTcpData ( String pcapDir ) {
 		this.pcapDir = pcapDir;
@@ -50,28 +51,50 @@ public class ExtractTcpData {
 	private void extractData ( String inPath, String savedName ) {
 		File dir = new File( "./tcpData");
 		String savedPath = "";
-		
 		try {
-			if ( !dir.exists() ) {
-				dir.mkdir();
-			}
+			if ( !dir.exists() ) { dir.mkdir(); }
 			savedPath = dir.getPath() + File.separator + savedName;
 			File file = new File( savedPath );
-			if ( !file.exists() ) {
-				file.createNewFile();
-			}
+			if ( !file.exists() ) { file.createNewFile(); }
 			FileInputStream in = new FileInputStream( inPath );
 			FileOutputStream out = new FileOutputStream( file );
-			byte[] fileHeader = new byte[24];
-			in.read( fileHeader );
+			in.skip( 24 );
 			byte[] packetHeader = new byte[16];
+			String bfSrc = null, curSrc = null;
+			int index = 0;
 			while ( in.read( packetHeader ) != -1 ) {
 				Util.reverseByteArray( packetHeader, 8, 4 );
 				int packetDataLen = (int)Util.byteArrayToLong( packetHeader, 8 );
 				byte[] packetData = new byte[ packetDataLen ];
 				in.read( packetData );
-				out.write( packetData );
+				curSrc = calSrc( packetData );
+				byte[] tcpSeg = takeSeg( packetData );
+				if ( bfSrc != null  && !curSrc.equals(bfSrc) && tcpSeg.length > 0 ) { out.write( DIVISION ); }
+				out.write( tcpSeg );
+				bfSrc = curSrc;
 			}			
 		} catch ( IOException ex ) { }
+	}
+
+	private String calSrc ( byte[] bts ) {
+		return unsignedByte(bts[26]) + "." + unsignedByte(bts[27]) + "." + unsignedByte(bts[28]) + "." + unsignedByte(bts[29]);
+	}
+
+	private byte[] takeSeg ( byte[] bts ) {
+		int ethHeaderLen = 14, ipHeaderLen, tcpHeaderLen, segLen, ipLen;
+		ipHeaderLen = (bts[14] & 0x0F) * 4;
+		tcpHeaderLen = ((bts[ 14 + ipHeaderLen + 12 ]&0xf0)>>4) * 4;
+		ipLen = Util.byteArrayToInt( bts, 16 );
+		segLen = ipLen - ipHeaderLen - tcpHeaderLen;
+		int skip = ethHeaderLen + ipHeaderLen + tcpHeaderLen;
+		byte[] result = new byte[segLen];
+		for ( int i = 0; i < segLen; i++ ) {
+			result[i] = bts[i+skip];
+		}
+		return result;
+	}
+
+	private int unsignedByte( byte b ) {
+		return b & 0x000000FF;
 	}
 }
