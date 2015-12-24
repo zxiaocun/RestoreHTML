@@ -40,12 +40,11 @@ public class ExtractTcpUdpFromPcap {
 				Session session = createSession( packetData );
 				int i = sessions.indexOf( session );
 				if ( i == -1 ) {
-					session.packets.add( pkt );
 					sessions.add( session );
 				} else {
 					session = sessions.get( i );
-					session.addPacket( pkt );
 				}
+				session.addPacket( pkt );
 			}
 
 			writeResult();
@@ -108,7 +107,7 @@ public class ExtractTcpUdpFromPcap {
 	}
 
 	private void writeResult () {
-		String outDir = "./tcp&udp";
+		String outDir = "./Ëã·¨1Êä³ö";
 		File file = new File( outDir );
 		if ( !file.exists() ) {
 			file.mkdirs();

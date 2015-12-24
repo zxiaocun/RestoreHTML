@@ -49,7 +49,7 @@ public class ExtractTcpData {
 	}
 
 	private void extractData ( String inPath, String savedName ) {
-		File dir = new File( "./tcpData");
+		File dir = new File( "./Ëã·¨2Êä³ö");
 		String savedPath = "";
 		try {
 			if ( !dir.exists() ) { dir.mkdir(); }

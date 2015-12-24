@@ -1,4 +1,4 @@
-import java.awt.*;       // Using AWT containers and components
+import java.awt.*;
 import java.awt.event.*; // Using AWT events and listener interfaces
 import javax.swing.*;    // Using Swing components and containers
 import java.io.File;
@@ -32,20 +32,20 @@ public class MainFrame extends JFrame {
       });
 
       cp.add(pcapFilePathField);
-      extractTcpUdp = new JButton("Extract Tcp Udp");
+      extractTcpUdp = new JButton("算法1");
        extractTcpUdp.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
           long start = new Date().getTime();
           String pcapFilePath = pcapFilePathField.getText();
           if ( pcapFilePath == null || pcapFilePath.length() == 0 ) {
-            JOptionPane.showMessageDialog( MainFrame.this, "Please input the pcap file path!");
+            JOptionPane.showMessageDialog( MainFrame.this, "请选择pcap文件!");
             return;
           }
           new ExtractTcpUdpFromPcap( pcapFilePath ).extract();
           long end = new Date().getTime();
           long time = ( end - start ) / 1000l;
-          JOptionPane.showMessageDialog( MainFrame.this, "Extract Successfully, takes " + time + " seconds!");
+          JOptionPane.showMessageDialog( MainFrame.this, "解析成功, 共花费 " + time + " 秒!");
         }
       });
       cp.add(extractTcpUdp);
@@ -64,16 +64,16 @@ public class MainFrame extends JFrame {
       });
       cp.add( pcapFileSavedDir );
 
-      extractTcpData = new JButton( "Extract Tcp Data" );
+      extractTcpData = new JButton( "算法2" );
       extractTcpData.addActionListener( new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           String pcapSavedDir = pcapFileSavedDir.getText();
           if ( pcapSavedDir == null || pcapSavedDir.length() == 0 ) {
-            JOptionPane.showMessageDialog( MainFrame.this, "Please select the pcap Directory!");
+            JOptionPane.showMessageDialog( MainFrame.this, "请选择pcap文件夹!");
             return;
           }
           new ExtractTcpData( pcapSavedDir ).extract();
-          JOptionPane.showMessageDialog( MainFrame.this, "Extract Successfully!");
+          JOptionPane.showMessageDialog( MainFrame.this, "解析成功!");
         }
       });
       cp.add(extractTcpData);
@@ -83,7 +83,7 @@ public class MainFrame extends JFrame {
      
  
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // Exit program if close-window button clicked
-      setTitle("Extract Tcp and Udp From Pcap"); // "this" JFrame sets title
+      setTitle("信息安全算法"); // "this" JFrame sets title
       setBounds( new Rectangle(220, 100, 650, 400) );         // "this" JFrame sets initial size
       setVisible(true);          // "this" JFrame shows
    }
